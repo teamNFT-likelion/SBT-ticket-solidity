@@ -1,9 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "./ttot_main.sol";
+import "hardhat/console.sol";
 
 contract Raffle_ttot {
-    ttot_main Main;
+    ttot_main public Main;
     constructor(address _addr){
         Main= ttot_main(_addr);
     }
@@ -23,7 +24,7 @@ contract Raffle_ttot {
 
     mapping(string => RaffleInfo) RaffleMap; // 참여코드 => 래플정보
 
-    function setRaffle(string memory _code, string memory _desc, uint _endDate, uint _numsOfPick, address[] _whiteList) public {
+    function setRaffle(string memory _code, string memory _desc, uint _endDate, uint _numsOfPick, address[] memory _whiteList) public {
         require(RaffleMap[_code].status == Status.None, "already exist code");
 
         RaffleMap[_code].status = Status.Waiting;
@@ -42,16 +43,17 @@ contract Raffle_ttot {
         RaffleMap[_code].status = Status.Ongoing;
     }
 
-    function checkWhiteList(string _code, uint _tokenId) public view returns(bool) {
+    function checkWhiteList(string memory _code, uint _tokenId) public view returns(bool) {
         if(RaffleMap[_code].whiteList.length == 0){
             return true;
         }
-
-        address tokenBy = Main.SbtTokens[_tokenId].hostAddress;
+        
+        // address hostAddress = Main.SbtTokens(_tokenId)[_tokenId].hostAddress;
+        address hostAddress = Main.getHostAddressByTokenId(_tokenId);
         bool checked;
         
         for(uint i; i < RaffleMap[_code].whiteList.length; i++){
-            if(tokenBy == RaffleMap[_code].whiteList[i]){
+            if(hostAddress == RaffleMap[_code].whiteList[i]){
                 checked = true;
             }
         }
