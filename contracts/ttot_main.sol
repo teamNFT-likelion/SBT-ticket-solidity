@@ -40,6 +40,7 @@ contract ttot_main is ERC721Enumerable {
     Counters.Counter private _tokenIds;
 
     // sbt에 들어갈 데이터
+    enum tokenStatus { Active, Inactive, Done }
     struct sbtTokenData {
         uint256 sbtTokenId; // id
         string  sbtTokenURI; // image, title, userEmail ...
@@ -49,7 +50,7 @@ contract ttot_main is ERC721Enumerable {
         string[] seats; // 환불할 때 필요한 선택 좌석들
         bool isActive;  // 공연이 아직 안끝났는지
     }
-    mapping (uint256 => sbtTokenData) SbtTokens;
+    mapping (uint256 => sbtTokenData) public SbtTokens;
     mapping (address => ttot_host) Hosts;
 
     // 주최측 등록
@@ -61,6 +62,14 @@ contract ttot_main is ERC721Enumerable {
     // 주최측 확인
     function getHost(address _addr) public view returns(ttot_host){
         return Hosts[_addr];
+    }
+
+    function getHostAddressByTokenId(uint _tokenId) public view returns(address){
+        return SbtTokens[_tokenId].hostAddress;
+    }
+
+    function setTokenStatus(uint _tokenId, address _addr, ) public {
+        SbtTokens.
     }
 
     // 티켓 구매와 발행
