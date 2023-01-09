@@ -4,6 +4,7 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./ttot_host.sol";
 
 /*
@@ -23,6 +24,7 @@ import "./ttot_host.sol";
 */
 
 contract ttot_main is ERC721Enumerable {
+    using Strings for uint256;
     // 컨트랙트 생성자를 owner로 등록
     address payable owner;
     constructor() ERC721("TicketToToken", "TTOT") payable {
@@ -86,7 +88,7 @@ contract ttot_main is ERC721Enumerable {
         Hosts[_hostAddress].pushSeat(_deadline, _seats);
 
         // 토큰의 정보 저장 후 mint 실행
-        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, true);
+        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, Status.active);
         _mint(msg.sender, tokenId);
 
         // SBT로 만들기 위해 송금 불가로 만듦
@@ -107,7 +109,8 @@ contract ttot_main is ERC721Enumerable {
         }
 
         return myTokenData;
-    }
+    }   
+
 
 
     // 환불기능
@@ -176,5 +179,11 @@ contract ttot_main is ERC721Enumerable {
     ) public override transferable(tokenId) {
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: caller is not token owner or approved");
         _safeTransfer(from, to, tokenId, data);
+    }
+
+    function withdraw(uint amount) public {
+        require(msg.sender == owner);
+        require(amount <= address(this).balance);
+        owner.transfer(amount);
     }
 }

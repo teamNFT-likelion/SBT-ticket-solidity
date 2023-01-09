@@ -11,6 +11,12 @@ contract Raffle_ttot {
 
     enum Status { None, Waiting, Ongoing, End } // 래플상태(미등록, 등록, 시작, 완료)
     
+    struct MetadataInfo {
+        string baseTokenURI;
+        uint deadline;
+        address hostAddress;
+    }
+
     struct RaffleInfo { 
         Status status; 
         address owner; // 참여코드발행자
@@ -20,6 +26,7 @@ contract Raffle_ttot {
         address[] whiteList; // 참여가능한 토큰의 hostAddress 목록
         address[] inputList; // 참여한주소목록
         address[] pickedList; // 당첨된주소목록
+        MetadataInfo metadata;
     }
 
     mapping(string => RaffleInfo) RaffleMap; // 참여코드 => 래플정보
@@ -35,12 +42,15 @@ contract Raffle_ttot {
         RaffleMap[_code].whiteList = _whiteList;
     }
 
-    function setRaffleStart(string memory _code) public {
+    function setRaffleStart(string memory _code,string memory _baseTokenUri,uint _deadline, address _hostAddress) public {
         require(RaffleMap[_code].owner == msg.sender,"only raffle owner");
         require(RaffleMap[_code].status == Status.Waiting, "already ongoing code");
         require(RaffleMap[_code].endDate > block.timestamp, "out of date");
 
         RaffleMap[_code].status = Status.Ongoing;
+        RaffleMap[_code].metadata.baseTokenURI = _baseTokenUri;
+        RaffleMap[_code].metadata.deadline = _deadline;
+        RaffleMap[_code].metadata.hostAddress = _hostAddress;
     }
 
     function checkWhiteList(string memory _code, uint _tokenId) public view returns(bool) {
@@ -63,9 +73,9 @@ contract Raffle_ttot {
     function join (string memory _code, uint _tokenId) public { 
         require(RaffleMap[_code].status == Status.Ongoing, "It's not an ongoing Raffle");
         require(RaffleMap[_code].endDate > block.timestamp, "out of date");
-        require(Main.ownerOf(_tokenId) == msg.sender); // 토큰소유자 체크
         require(checkWhiteList(_code, _tokenId)); // 화이트 리스트 토큰 체크
 
+        Main.setSbtDone(_tokenId, msg.sender);
         RaffleMap[_code].inputList.push(msg.sender);
     }
 
@@ -88,6 +98,8 @@ contract Raffle_ttot {
 
         RaffleMap[_code].pickedList = pickedList;
         RaffleMap[_code].status = Status.End;
+
+        Main.raffleMintSbt(pickedList, info.metadata.baseTokenURI, info.metadata.deadline, info.metadata.hostAddress);
 
         return pickedList;
     }
