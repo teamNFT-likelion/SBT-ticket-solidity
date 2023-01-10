@@ -1,13 +1,4 @@
-# Sample Hardhat Project
-
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, and a script that deploys that contract.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat help
-npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat run scripts/deploy.js
-```
+20230110
+main address: 0xd54bbe64512960Dc409A9532108F6Cf3E15DFe2B
+raffle address: 0x5f9Bf7fd91c037F52E6BD89d1e59697770211492
+host address: hostData/20230110_deployedHostInfo.json
