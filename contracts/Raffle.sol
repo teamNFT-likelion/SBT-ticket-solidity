@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.7;
 import "./ttot_main.sol";
-import "hardhat/console.sol";
 
 contract Raffle_ttot {
     ttot_main public Main;
@@ -73,7 +72,7 @@ contract Raffle_ttot {
     function join (string memory _code, uint _tokenId) public { 
         require(RaffleMap[_code].status == Status.Ongoing, "It's not an ongoing Raffle");
         require(RaffleMap[_code].endDate > block.timestamp, "out of date");
-        require(checkWhiteList(_code, _tokenId)); // 화이트 리스트 토큰 체크
+        require(checkWhiteList(_code, _tokenId),"fail whitelist check"); // 화이트 리스트 토큰 체크
 
         Main.setSbtDone(_tokenId, msg.sender);
         RaffleMap[_code].inputList.push(msg.sender);

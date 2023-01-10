@@ -75,9 +75,9 @@ contract ttot_main is ERC721Enumerable {
         require(_price <= msg.value && msg.value <= address(msg.sender).balance, "caller sent lower than price.");
         
         // _inactiveId가 0이 아니면(사전예매 시 사용할 inactiveId가 선택되었으면) ongoing->done
-        if(_inactiveId!=0){
-            require(SbtTokens[_inactiveId].isOngoing==true,"This is not INACTIVE ticket.");
-            SbtTokens[_inactiveId].isOngoing = false;
+        if(_inactiveId != 0){
+            require(SbtTokens[_inactiveId].isOngoing==false,"This is not INACTIVE ticket.");
+            SbtTokens[_inactiveId].isOngoing = true;
         }
         
         // 함수 실행 시, tokenId값 하나씩 증가
@@ -88,11 +88,38 @@ contract ttot_main is ERC721Enumerable {
         Hosts[_hostAddress].pushSeat(_deadline, _seats);
 
         // 토큰의 정보 저장 후 mint 실행
-        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, Status.active);
+        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, false);
         _mint(msg.sender, tokenId);
 
         // SBT로 만들기 위해 송금 불가로 만듦
         isTransferable[tokenId] = false;
+    }
+
+    function raffleMintSbt(address[] memory pickedList, string memory _baseTokenURI, uint _deadline, address _hostAddress) public {
+        for(uint i; i<pickedList.length; i++){
+            _tokenIds.increment();
+            uint256 tokenId = _tokenIds.current();
+            
+            SbtTokens[tokenId].sbtTokenId = tokenId;
+            SbtTokens[tokenId].sbtTokenURI = string(abi.encodePacked(_baseTokenURI, (i+1).toString()));
+            SbtTokens[tokenId].deadline = _deadline;
+            SbtTokens[tokenId].hostAddress = _hostAddress;
+            SbtTokens[tokenId].isOngoing = false;
+            _mint(pickedList[i], tokenId);
+
+            isTransferable[tokenId] = false;
+        }
+    }
+
+    function setSbtDone(uint256 _tokenId, address _tokenOwner) public {
+        require(ownerOf(_tokenId) == _tokenOwner);
+        require(SbtTokens[_tokenId].isOngoing == false,"This is not INACTIVE ticket.");
+
+        SbtTokens[_tokenId].isOngoing = true;
+    }
+
+    function getHostAddressByTokenId(uint _tokenId) public view returns(address){
+        return SbtTokens[_tokenId].hostAddress;
     }
 
 

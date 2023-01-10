@@ -1,12 +1,18 @@
 const hre = require("hardhat");
 
 async function main() {
-	const Raffle = await hre.ethers.getContractFactory("Raffle_ttot");
-	const contract = await Raffle.deploy();
+	const main = await hre.ethers.getContractFactory("ttot_main");
+	const mainCA = await main.deploy();
 
-	await contract.deployed();
+	await mainCA.deployed();
 
-	console.log(`address: ${contract.address}`);
+	const raffle = await hre.ethers.getContractFactory("Raffle_ttot");
+	const raffleCA = await raffle.deploy(mainCA.address);
+
+	await raffleCA.deployed();
+
+	console.log(`main address: ${mainCA.address}`);
+	console.log(`raffle address: ${raffleCA.address}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

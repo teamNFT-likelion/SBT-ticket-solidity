@@ -3,18 +3,18 @@ require("@nomiclabs/hardhat-ethers");
 require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
-const { PK, ETH_SCAN_KEY, GOERLI_NETWORK_URL, MUMBAI_NETWORK_URL } = process.env;
+const { PK, ETH_SCAN_KEY, GOERLI_NETWORK_URL, MUMBAI_NETWORK_URL, POLYGON_SCAN_KEY } = process.env;
 module.exports = {
 	solidity: "0.8.7",
 	etherscan: {
-		apiKey: ETH_SCAN_KEY,
+		apiKey: { goerli: ETH_SCAN_KEY, polygonMumbai: POLYGON_SCAN_KEY },
 	},
 	networks: {
 		goerli: {
 			url: GOERLI_NETWORK_URL,
 			accounts: [PK],
 		},
-		polygon_mumbai: {
+		polygonMumbai: {
 			url: MUMBAI_NETWORK_URL,
 			accounts: [PK],
 		},
