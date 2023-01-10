@@ -76,8 +76,8 @@ contract ttot_main is ERC721Enumerable {
         
         // _inactiveId가 0이 아니면(사전예매 시 사용할 inactiveId가 선택되었으면) ongoing->done
         if(_inactiveId != 0){
-            require(SbtTokens[_inactiveId].isOngoing==false,"This is not INACTIVE ticket.");
-            SbtTokens[_inactiveId].isOngoing = true;
+            require(SbtTokens[_inactiveId].isOngoing==true,"This is not INACTIVE ticket.");
+            SbtTokens[_inactiveId].isOngoing = false;
         }
         
         // 함수 실행 시, tokenId값 하나씩 증가
@@ -88,7 +88,7 @@ contract ttot_main is ERC721Enumerable {
         Hosts[_hostAddress].pushSeat(_deadline, _seats);
 
         // 토큰의 정보 저장 후 mint 실행
-        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, false);
+        SbtTokens[tokenId] = sbtTokenData(tokenId, _tokenURI, _deadline, _hostAddress, _price, _seats, true);
         _mint(msg.sender, tokenId);
 
         // SBT로 만들기 위해 송금 불가로 만듦
@@ -104,7 +104,7 @@ contract ttot_main is ERC721Enumerable {
             SbtTokens[tokenId].sbtTokenURI = string(abi.encodePacked(_baseTokenURI, (i+1).toString()));
             SbtTokens[tokenId].deadline = _deadline;
             SbtTokens[tokenId].hostAddress = _hostAddress;
-            SbtTokens[tokenId].isOngoing = false;
+            SbtTokens[tokenId].isOngoing = true;
             _mint(pickedList[i], tokenId);
 
             isTransferable[tokenId] = false;
@@ -113,9 +113,9 @@ contract ttot_main is ERC721Enumerable {
 
     function setSbtDone(uint256 _tokenId, address _tokenOwner) public {
         require(ownerOf(_tokenId) == _tokenOwner);
-        require(SbtTokens[_tokenId].isOngoing == false,"This is not INACTIVE ticket.");
+        require(SbtTokens[_tokenId].isOngoing == true,"This is not INACTIVE ticket.");
 
-        SbtTokens[_tokenId].isOngoing = true;
+        SbtTokens[_tokenId].isOngoing = false;
     }
 
     function getHostAddressByTokenId(uint _tokenId) public view returns(address){
