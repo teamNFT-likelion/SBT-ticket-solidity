@@ -643,9 +643,10 @@ console.log(hostAddrList.length);
 
 async function kkk() {
 	const result = [];
-	for (let addr of hostAddrList) {
-		await contract.setHost(addr, { gasPrice: 21000000000, gasLimit: 60000 }).then((res) => result.push(res));
-	}
+	// for (let addr of hostAddrList) {
+	// 	// await contract.setHost(addr, { gasPrice: 21000000000, gasLimit: 60000 }).then((res) => result.push(res));
+	// }
+	await contract.burnSbtToken(11, { gasPrice: 21000000000, gasLimit: 30000 }).then((res) => result.push(res));
 	console.log(result);
 }
 kkk();

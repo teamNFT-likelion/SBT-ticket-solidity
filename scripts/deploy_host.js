@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 const fs = require("fs");
 const path = require("path");
-const hostData = require("../hostData/hostInfo_copy_1.json");
+const hostData = require("../hostData/hostInfo.json");
 
 const mainCA = "0xd54bbe64512960Dc409A9532108F6Cf3E15DFe2B"; //20230110
 
@@ -17,8 +17,8 @@ async function main() {
 	);
 
 	const outPath = path.join(__dirname, "../hostData");
-	fs.unlinkSync(`${outPath}/deployedHostInfo_copy_1.json`);
-	fs.writeFileSync(`${outPath}/deployedHostInfo_copy_1.json`, JSON.stringify(deployedItems, null, 2), { encoding: "utf8", flag: "w" });
+	fs.unlinkSync(`${outPath}/deployedHostInfo.json`);
+	fs.writeFileSync(`${outPath}/deployedHostInfo.json`, JSON.stringify(deployedItems, null, 2), { encoding: "utf8", flag: "w" });
 }
 
 // We recommend this pattern to be able to use async/await everywhere
